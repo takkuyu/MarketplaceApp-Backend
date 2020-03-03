@@ -1,5 +1,5 @@
 const router = require('express').Router();
-let Posting = require('../models/posting.model');
+let Description = require('../models/description.model');
 
 //Get route
 router.route('/').get((req, res) => {
@@ -11,14 +11,6 @@ router.route('/').get((req, res) => {
 //Get route for one posting
 router.route('/:id').get((req, res) => { // 
     Posting.findById(req.params.id) // getting the id dirctly from the URL there
-        .then(posting => res.json(posting))
-        .catch(err => res.status(400).json('Error: ' + err));
-});
-
-
-//Comment route for one posting
-router.route('/comments/:id').get((req, res) => { // 
-    Posting.findById(req.params.id) 
         .then(posting => res.json(posting))
         .catch(err => res.status(400).json('Error: ' + err));
 });

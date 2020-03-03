@@ -8,6 +8,26 @@ router.route('/').get((req, res) => {
         .catch(err => res.status(400).json('Error: ' + err));
 });
 
+//Get route
+router.route('/:id').get((req, res) => {
+    const likedId = req.params.id;
+
+    Likes.findOne( {likedId} )
+        .then((res) => res.json('Found !'))
+        .catch(err => res.status(400).json('Error: ' + err));
+});
+
+// //Get route for one posting
+// router.route('/findLikesById').post((req, res) => { // 
+
+//     const likedBy = req.body.likedBy;
+
+//     Likes.find({likedBy:likedBy})
+//         .then(likes => res.json(likes))
+//         .catch(err => res.status(400).json('Error: ' + err));
+// });
+
+
 router.route('/isLiked').post((req, res) => { 
     const likedId = req.body.likedId;
 

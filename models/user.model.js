@@ -21,6 +21,13 @@ const userSchema = new Schema({
         required: true,
         trim: true,
         minlength: 5
+    },
+    picture:{
+        type:String,
+        // required: true,
+    },
+    favorites:{
+        type:Array,
     }
 },{
     timestamps: true 
