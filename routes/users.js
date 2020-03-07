@@ -21,21 +21,42 @@ router.route('/:id').get((req, res) => {
 });
 
 // @route  POST api/profile/me
+// @desc   Edit current users profile
+// @access Public 
+router.route('/edit/:id').post((req, res) => {
+
+    const newName = req.body.newName;
+    const newEmail = req.body.newEmail;
+    const newPic = req.body.newPic;
+
+    User.findById(req.params.id)
+        .then(user => {
+            user.username = newName;
+            user.email = newEmail;
+            user.picture = newPic;
+            user.save()
+                .then(() => res.json('Edit user profile !'))
+                .catch(err => res.status(400).json('Error: ' + err))
+        })
+        .catch(err => res.status(400).json('Error: ' + err));
+});
+
+// @route  POST api/profile/me
 // @desc   Check if the post is already liked
 // @access Public 
 router.route('/checkLiked/:id').post((req, res) => {
 
-        const postingId = req.params.id;
-        const userId = req.body.userId;
+    const postingId = req.params.id;
+    const userId = req.body.userId;
 
     User.findById(userId)
         .then(user => {
 
             const result = user.favorites.filter(favorite => favorite == postingId)
 
-            if(result.length > 0){
+            if (result.length > 0) {
                 res.json(true)
-            }else{
+            } else {
                 res.json(false)
             }
         })
@@ -48,8 +69,9 @@ router.route('/register').post((req, res) => {
     const username = req.body.username;
     const email = req.body.email;
     const password = req.body.password;
+    const picture = req.body.picture;
 
-    const newUser = new User({ username, email, password });
+    const newUser = new User({ picture, username, email, password });
 
     // const user = {
     //     username: username,
@@ -60,7 +82,7 @@ router.route('/register').post((req, res) => {
 
     newUser.save()
         // .then(() => res.json({ accessToken: accessToken }))
-        .then(() => res.json('User registered !'))
+        .then((newuser) => res.json(newuser._id))
         .catch(err => res.status(400).json('Error: ' + err));
     // .then(() => res.json({ accessToken: accessToken }));
 
@@ -94,7 +116,7 @@ router.route('/:id').delete((req, res) => {
 //POST route, delete liked posting  
 router.route('/deleteLike/:id').post((req, res) => {
 
-        User.findById(req.params.id)
+    User.findById(req.params.id)
         .then((user) => {
 
             const deleteId = req.body.deleteId;
@@ -115,25 +137,25 @@ router.route('/deleteLikeFromAll').post((req, res) => {
 
     const deletedId = req.body.deletedId;
 
-    User.find({favorites: deletedId})
-    .then((users) => {
+    User.find({ favorites: deletedId })
+        .then((users) => {
 
-        // result will be empty array (len = 0) when there's no user found with the id
-        if(users.length == 0){
-            res.json('zero user !')
-            return
-        }
+            // result will be empty array (len = 0) when there's no user found with the id
+            if (users.length == 0) {
+                res.json('zero user !')
+                return
+            }
 
-        users.forEach(user =>{
-            // console.log('original : ' + user.favorites);
-            const newArray = user.favorites.filter(id => id !== deletedId);
-            // console.log('new array : ' + newArray);
-            user.favorites = newArray;
-            user.save();
+            users.forEach(user => {
+                // console.log('original : ' + user.favorites);
+                const newArray = user.favorites.filter(id => id !== deletedId);
+                // console.log('new array : ' + newArray);
+                user.favorites = newArray;
+                user.save();
+            })
+            res.json('success !')
         })
-        res.json('success !')
-    })
-    .catch(err => res.status(400).json('Error: ' + err));
+        .catch(err => res.status(400).json('Error: ' + err));
 });
 
 

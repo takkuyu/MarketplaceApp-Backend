@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
+    picture:{
+        type: String, // some validations
+        required: true,
+    },
     username:{
         type: String, // some validations
         required: true,
@@ -21,10 +25,6 @@ const userSchema = new Schema({
         required: true,
         trim: true,
         minlength: 5
-    },
-    picture:{
-        type:String,
-        // required: true,
     },
     favorites:{
         type:Array,

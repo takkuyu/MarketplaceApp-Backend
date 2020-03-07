@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const postingSchema = new Schema({
     createdby: { type: String, required: true },
-    profilePic: { type: String, required: true },
+    // profilePic: { type: String, required: true },
     title: { type: String, required: true },
     location: { type: String, required: true },
     price: { type: Number, required: true },

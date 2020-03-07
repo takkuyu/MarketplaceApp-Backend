@@ -27,7 +27,7 @@ router.route('/comments/:id').get((req, res) => { //
 router.route('/post').post((req, res) => {
 
     const createdby = req.body.createdby;
-    const profilePic = req.body.profilePic;
+    // const profilePic = req.body.profilePic;
     const title = req.body.title;
     const location = req.body.location;
     const price = req.body.price;
@@ -37,7 +37,7 @@ router.route('/post').post((req, res) => {
     const likes = 0;
     const comments = [];
 
-    const newPosting = new Posting({ createdby, profilePic, title, location, price, condition, image, description, likes, comments });
+    const newPosting = new Posting({ createdby, title, location, price, condition, image, description, likes, comments });
 
     newPosting.save()
         .then(() => res.json('Created a posting !'))
