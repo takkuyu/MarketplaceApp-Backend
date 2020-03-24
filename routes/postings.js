@@ -4,7 +4,7 @@ let Posting = require('../models/posting.model');
 //Get route
 router.route('/').get((req, res) => {
     Posting.find()
-        .then(postings => res.json(postings))
+        .then(postings => res.send(postings))
         .catch(err => res.status(400).json('Error: ' + err));
 });
 
@@ -16,18 +16,10 @@ router.route('/:id').get((req, res) => { //
 });
 
 
-//Comment route for one posting
-router.route('/comments/:id').get((req, res) => { // 
-    Posting.findById(req.params.id) 
-        .then(posting => res.json(posting))
-        .catch(err => res.status(400).json('Error: ' + err));
-});
-
 //Post route
 router.route('/post').post((req, res) => {
 
     const createdby = req.body.createdby;
-    // const profilePic = req.body.profilePic;
     const title = req.body.title;
     const location = req.body.location;
     const price = req.body.price;

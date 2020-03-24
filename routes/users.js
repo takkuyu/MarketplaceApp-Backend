@@ -1,8 +1,5 @@
-// require('dotenv').config();
-
 const router = require('express').Router();
 let User = require('../models/user.model');
-// const jwt = require('jsonwebtoken');
 
 
 router.route('/').get((req, res) => {
@@ -66,40 +63,31 @@ router.route('/checkLiked/:id').post((req, res) => {
 
 router.route('/register').post((req, res) => {
 
-    const username = req.body.username;
-    const email = req.body.email;
-    const password = req.body.password;
-    const picture = req.body.picture;
+    const newUser = new User({
+        picture: req.body.picture,
+        username: req.body.username,
+        email: req.body.email,
+        password: req.body.password
 
-    const newUser = new User({ picture, username, email, password });
-
-    // const user = {
-    //     username: username,
-    //     email: email,
-    //     password: password
-    // }
-    // const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
+    });
 
     newUser.save()
-        // .then(() => res.json({ accessToken: accessToken }))
         .then((newuser) => res.json(newuser._id))
         .catch(err => res.status(400).json('Error: ' + err));
-    // .then(() => res.json({ accessToken: accessToken }));
-
 });
 
-router.route('/signin').post((req, res) => {
 
+router.route('/signin').post((req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
     User.findOne({ email, password })
-
         .then((user) => {
             if (user) { // when successfully found one user, otherwise it gives a null.
-                res.json(user);
+                req.session.user_id = user._id;
+                res.json(req.session.user_id);
             } else {
-                res.json('');
+                res.end();
             }
         })
         .catch(err => res.status(400).json('Error: ' + err));
@@ -176,18 +164,5 @@ router.route('/favorite/:id').post((req, res) => {
         .catch(err => res.status(400).json('Error: ' + err));
 
 });
-
-
-// function authenticateToken(req, res, next) {
-//     const authHeader = req.headers['authorization'];
-//     const token = authHeader && authHeader.split(' ')[1];
-//     if (token == null) return res.sendStatus(401);
-
-//     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-//         if (err) return res.sendStatus(403);
-//         req.user = user;
-//         next();
-//     })
-// }
 
 module.exports = router;
