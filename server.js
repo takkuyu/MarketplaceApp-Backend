@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv')
 const postingRouter = require('./routes/postings');
 const userRouter = require('./routes/users');
-const session = require('express-session');
+// const session = require('express-session');
 
 dotenv.config();
 
@@ -14,11 +14,11 @@ const port = process.env.PORT || 3000;
 //Middleware
 app.use(cors());
 app.use(express.json());
-app.use(session({ // For Express-Session for user id
-    secret: 'keyboard cat',
-    resave: false,
-    saveUninitialized: true
-}));
+// app.use(session({ 
+//     secret: 'keyboard cat',
+//     resave: false,
+//     saveUninitialized: true
+// }));
 
 //Connect to DB
 const uri = process.env.ATLAS_URI;

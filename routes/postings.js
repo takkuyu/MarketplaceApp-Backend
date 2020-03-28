@@ -1,35 +1,37 @@
 const router = require('express').Router();
-let Posting = require('../models/posting.model');
+const verify = require('./verifyToken');
+const Posting = require('../models/posting.model');
 
 //Get route
-router.route('/').get((req, res) => {
+router.get('/', verify, (req, res) => {
     Posting.find()
-        .then(postings => res.send(postings))
+        .then(postings => res.send({ postings: postings, userid: req.user._id }))
         .catch(err => res.status(400).json('Error: ' + err));
 });
 
 //Get route for one posting
-router.route('/:id').get((req, res) => { // 
+router.get('/:id', verify, (req, res) => {
     Posting.findById(req.params.id) // getting the id dirctly from the URL there
-        .then(posting => res.json(posting))
+        .then(posting => res.json({ posting: posting, userid: req.user._id }))
         .catch(err => res.status(400).json('Error: ' + err));
 });
 
 
 //Post route
-router.route('/post').post((req, res) => {
+router.post('/post', verify, (req, res) => {
 
-    const createdby = req.body.createdby;
-    const title = req.body.title;
-    const location = req.body.location;
-    const price = req.body.price;
-    const condition = req.body.condition;
-    const image = req.body.image;
-    const description = req.body.description;
-    const likes = 0;
-    const comments = [];
-
-    const newPosting = new Posting({ createdby, title, location, price, condition, image, description, likes, comments });
+    // res.send(req.user._id)
+    const newPosting = new Posting({
+        createdby: req.user._id, // put userid which was returned by jwt payload
+        title: req.body.title,
+        location: req.body.location,
+        price: req.body.price,
+        condition: req.body.condition,
+        image: req.body.image,
+        description: req.body.description,
+        likes: 0,
+        comments: []
+    });
 
     newPosting.save()
         .then(() => res.json('Created a posting !'))
@@ -45,7 +47,7 @@ router.route('/:id').delete((req, res) => {
 
 
 //Update route
-router.route('/update/:id').post((req, res) => {
+router.post('/update/:id', verify, (req, res) => {
     Posting.findById(req.params.id)
         .then(posting => {
             posting.title = req.body.title;
@@ -63,15 +65,12 @@ router.route('/update/:id').post((req, res) => {
 });
 
 //Update comments route 
-router.route('/update/comments/:id').post((req, res) => {
+router.post('/update/comments/:id', verify, (req, res) => {
     Posting.findById(req.params.id)
         .then(posting => {
-
-            const author = req.body.author;
-            const newcomment = req.body.comment;
             const comment = {
-                author: author,
-                comment: newcomment
+                author: req.user._id,
+                comment: req.body.comment
             }
             posting.comments.push(comment);
             posting.save()
