@@ -34,7 +34,7 @@ router.route('/:id').get((req, res) => {
 
 // @route  POST api/profile/me
 // @desc   Edit current users profile
-// @access Public 
+// @access Private 
 router.post('/update', verify, (req, res) => {
     User.findById(req.user._id)
         .then(user => {
@@ -137,24 +137,20 @@ router.post('/unliked', verify, (req, res) => {
         .catch(err => res.status(400).json('Error: ' + err));
 });
 
-//POST route, delete like when it is deleted by user  
+// @route  POST /users/favorite
+// @desc   When the post was deleted by its user, the id stored on 'favorites' field of other users db is deleted.
+// @access Public
 router.route('/deleteLikeFromAll').post((req, res) => {
-
     const deletedId = req.body.deletedId;
-
     User.find({ favorites: deletedId })
         .then((users) => {
-
             // result will be empty array (len = 0) when there's no user found with the id
             if (users.length == 0) {
                 res.json('zero user !')
                 return
             }
-
             users.forEach(user => {
-                // console.log('original : ' + user.favorites);
                 const newArray = user.favorites.filter(id => id !== deletedId);
-                // console.log('new array : ' + newArray);
                 user.favorites = newArray;
                 user.save();
             })
@@ -163,23 +159,20 @@ router.route('/deleteLikeFromAll').post((req, res) => {
         .catch(err => res.status(400).json('Error: ' + err));
 });
 
-
-//POST for Favorites 
+// @route  POST /users/favorite
+// @desc   Add an id of the posting that the user added to favorite onto the user's db entry
+// @access Public
 router.route('/favorite/:id').post((req, res) => {
-
     User.findById(req.params.id)
         .then((user) => {
-
             const favoriteId = req.body.favoriteId;
-
             user.favorites.push(favoriteId);
             user.save()
                 .then(() => res.json('Added to Favorite !'))
                 .catch(err => res.status(400).json('Error: ' + err));
 
         })
-        .catch(err => res.status(400).json('Error: ' + err));
-
+        .catch(err => res.status(400).json('Error: ' + err))
 });
 
 module.exports = router;

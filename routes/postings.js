@@ -12,15 +12,19 @@ router.get('/', verify, (req, res) => {
 //Get route for one posting
 router.get('/:id', verify, (req, res) => {
     Posting.findById(req.params.id) // getting the id dirctly from the URL there
-        .then(posting => res.json({ posting: posting, userid: req.user._id }))
+        .then(posting => {
+            if (posting === null) {
+                res.status(400).json('the post does not exist');
+                return
+            }
+            res.json({ posting: posting, userid: req.user._id })
+        })
         .catch(err => res.status(400).json('Error: ' + err));
 });
 
 
 //Post route
 router.post('/post', verify, (req, res) => {
-
-    // res.send(req.user._id)
     const newPosting = new Posting({
         createdby: req.user._id, // put userid which was returned by jwt payload
         title: req.body.title,
